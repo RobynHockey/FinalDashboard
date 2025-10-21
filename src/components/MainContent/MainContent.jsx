@@ -8,7 +8,7 @@ const MainContent = () => {
     <main className="main-content">
       <h2>University of Pretoria 3D Model</h2>
       <div className="model-container">
-        {/* <ThreeDModel /> */}
+        <ThreeDModel/>
       </div>
     </main>
   );

@@ -5,10 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const ThreeDModel = () => {
   const mountRef = useRef(null);
-  const modelRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
+  const modelRef = useRef(null); // Added back so buttons can target it
 
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -16,8 +13,7 @@ const ThreeDModel = () => {
 
     // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb);
-    sceneRef.current = scene;
+    scene.background = new THREE.Color(0x87ceeb); // sky blue
 
     // Camera
     const camera = new THREE.PerspectiveCamera(
@@ -26,19 +22,21 @@ const ThreeDModel = () => {
       0.1,
       10000
     );
-    cameraRef.current = camera;
+
+    //  Start camera slightly closer to model
+    camera.position.set(0, 80, 200);
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     currentMount.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(50, 50, 50);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    directionalLight.position.set(50, 100, 100);
     scene.add(directionalLight);
 
     // Controls
@@ -53,28 +51,29 @@ const ThreeDModel = () => {
 
     // Load GLTF model
     const loader = new GLTFLoader();
-    loader.load("/Model/Model2.gltf", (gltf) => {
-      scene.add(gltf.scene);
-      modelRef.current = gltf.scene;
+    loader.load(
+      "/Model/Model2.gltf", // <-- replace with your actual file path
+      (gltf) => {
+        scene.add(gltf.scene);
+        modelRef.current = gltf.scene; // store reference for rotation
 
-      // Center the model
-      const box = new THREE.Box3().setFromObject(gltf.scene);
-      const center = box.getCenter(new THREE.Vector3());
-      gltf.scene.position.sub(center);
+        // Center and scale model
+        const box = new THREE.Box3().setFromObject(gltf.scene);
+        const center = box.getCenter(new THREE.Vector3());
+        gltf.scene.position.sub(center);
 
-      // Scale model to fit nicely in the block
-      const size = box.getSize(new THREE.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 100 / maxDim; // Adjust this to change how much space model fills
-      gltf.scene.scale.setScalar(scale);
+        const size = box.getSize(new THREE.Vector3()).length();
+        const scale = 700 / size;
+        gltf.scene.scale.setScalar(scale);
 
-      // Adjust camera to fit model
-      const distance = maxDim * scale * 1.2; // 1.2 adds a little padding
-      camera.position.set(distance, distance, distance);
-      camera.lookAt(new THREE.Vector3(0, 0, 0));
-      controls.target.set(0, 0, 0);
-      controls.update();
-    });
+        // Fit camera a bit further out so model fits block nicely
+        const distance = size * 0.9; 
+        camera.position.set(center.x + distance, center.y + distance, center.z + distance);
+        camera.lookAt(center);
+        controls.target.copy(center);
+        controls.update();
+      }
+    );
 
     // Animation loop
     const animate = () => {
@@ -92,16 +91,17 @@ const ThreeDModel = () => {
     };
     window.addEventListener("resize", handleResize);
 
+    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       currentMount.removeChild(renderer.domElement);
     };
   }, []);
 
-  // Rotate model on button press
+  // Button functionality (rotation)
   const rotateModel = (direction) => {
     if (!modelRef.current) return;
-    const step = 0.1; // radians
+    const step = 0.1; // radians per click
 
     switch (direction) {
       case "left":
@@ -116,13 +116,12 @@ const ThreeDModel = () => {
       case "down":
         modelRef.current.rotation.x -= step;
         break;
-    }
-
-    if (rendererRef.current && sceneRef.current && cameraRef.current) {
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
+      default:
+        break;
     }
   };
 
+  // Same UI as before
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100%" }} />
@@ -152,6 +151,7 @@ const ThreeDModel = () => {
 };
 
 export default ThreeDModel;
+
 
 
 
