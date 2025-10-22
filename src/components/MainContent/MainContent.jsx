@@ -1,4 +1,3 @@
-// src/components/MainContent/MainContent.jsx
 import React from "react";
 import "./MainContent.css";
 import ThreeDModel from "../Model/3DModel"; // simple import

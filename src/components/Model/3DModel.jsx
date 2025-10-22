@@ -322,7 +322,7 @@ const ThreeDModel = () => {
 
     // Load model
     const loader = new GLTFLoader();
-    loader.load("/Model/Model2.gltf", (gltf) => {
+    loader.load("/FinalDashboard/Model/Model2.gltf", (gltf) => {
       scene.add(gltf.scene);
       modelRef.current = gltf.scene;
 
