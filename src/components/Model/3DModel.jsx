@@ -335,10 +335,10 @@ const ThreeDModel = () => {
 
       // Shift model up slightly
       gltf.scene.position.y += 180;
-      gltf.scene.position.x += 0;
+      gltf.scene.position.x += 20;
 
       const size = box.getSize(new THREE.Vector3()).length();
-      const scale = 900 / size;
+      const scale = 2000 / size;
       gltf.scene.scale.setScalar(scale);
 
       // Fit camera
