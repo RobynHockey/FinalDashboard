@@ -322,9 +322,11 @@ const ThreeDModel = () => {
 
     // Load model
     const loader = new GLTFLoader();
-    loader.load("/FinalDashboard/Model/Model2.gltf", (gltf) => {
+    loader.load("/FinalDashboard/Model/Model3.gltf", (gltf) => {
       scene.add(gltf.scene);
       modelRef.current = gltf.scene;
+
+      
 
       // Center and scale model
       const box = new THREE.Box3().setFromObject(gltf.scene);
@@ -332,10 +334,11 @@ const ThreeDModel = () => {
       gltf.scene.position.sub(center);
 
       // Shift model up slightly
-      gltf.scene.position.y += 170;
+      gltf.scene.position.y += 180;
+      gltf.scene.position.x += 0;
 
       const size = box.getSize(new THREE.Vector3()).length();
-      const scale = 700 / size;
+      const scale = 900 / size;
       gltf.scene.scale.setScalar(scale);
 
       // Fit camera
@@ -344,6 +347,8 @@ const ThreeDModel = () => {
       camera.lookAt(center);
       controls.target.copy(center);
       controls.update();
+
+      
     });
 
     // Animation loop
