@@ -17,7 +17,7 @@ const MainContent = () => {
       <LayersToggle />
 
       <div className="model-container">
-        {/* <ThreeDModel/> */}
+        <ThreeDModel/>
         
       </div>
     </main>
